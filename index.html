@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>حاسبة معدل CPST</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     body {
       font-family: 'Tahoma', sans-serif;
@@ -43,6 +44,23 @@
     button:hover {
       background-color: #256d46;
     }
+    .social-links {
+      margin-top: 30px;
+      font-size: 18px;
+    }
+    .social-links a {
+      margin: 0 10px;
+      color: #333;
+      text-decoration: none;
+    }
+    .social-links a:hover {
+      color: #0077cc;
+    }
+    .footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #555;
+    }
   </style>
 </head>
 <body>
@@ -52,6 +70,22 @@
 
   <button onclick="calculateGeneralAverage()">احسب المعدل العام</button>
   <h2 id="final-result"></h2>
+  <p id="status-message" style="font-size: 18px; font-weight: bold;"></p>
+
+  <div class="social-links">
+    <p>تابعني على:</p>
+    <a href="https://facebook.com/zinou.bhr" target="_blank">
+      <i class="fab fa-facebook"></i> فيسبوك
+    </a>
+    |
+    <a href="https://instagram.com/o_u_s_s_a_m._.a" target="_blank">
+      <i class="fab fa-instagram"></i> إنستغرام
+    </a>
+  </div>
+
+  <div class="footer">
+    <p>هذا الموقع تم إطلاقه سنة 2025 بواسطة <strong>OUSSAMA SALMA</strong></p>
+  </div>
 
   <script>
     const subjects = [
@@ -102,6 +136,15 @@
       });
       const final = (totalWeighted / totalCoeff).toFixed(2);
       document.getElementById('final-result').innerText = `المعدل العام: ${final}`;
+
+      const status = document.getElementById('status-message');
+      if (final >= 10) {
+        status.innerText = "✅ ناجح – بالتوفيق في مسيرتك!";
+        status.style.color = "green";
+      } else {
+        status.innerText = "❌ راسب – لا تحزن، القادم أفضل بإذن الله ❤️";
+        status.style.color = "red";
+      }
     }
 
     createInputs();
