@@ -1,153 +1,238 @@
-<!DOCTYPE html>
-<html lang="ar">
+<!DOCTYPE html><html lang="ar">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>حاسبة معدل CPST</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
+    :root {
+      --main-color: #2ecc71;
+      --background: #ffffff;
+      --text-color: #2c3e50;
+      --card-bg: #ffffff;
+      --button-bg: #2ecc71;
+      --button-hover: #27ae60;
+    }
+    body.dark-mode {
+      --main-color: #27ae60;
+      --background: #121212;
+      --text-color: #f0f0f0;
+      --card-bg: #1f1f1f;
+      --button-bg: #27ae60;
+      --button-hover: #1e8449;
+    }
     body {
       font-family: 'Tahoma', sans-serif;
       direction: rtl;
-      text-align: right;
+      background-color: var(--background);
+      color: var(--text-color);
+      margin: 0;
       padding: 20px;
-      background: #f4f4f4;
+      transition: background-color 0.3s, color 0.3s;
     }
-    h1, h2 {
-      color: #333;
+    header {
+      text-align: center;
+      background-color: var(--main-color);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
     }
     .subject {
-      background: #fff;
-      padding: 10px;
+      background: var(--card-bg);
+      padding: 15px;
       margin-bottom: 10px;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
     }
-    label {
+    label, input {
       display: block;
-      margin: 5px 0 2px;
+      width: 100%;
+      margin: 5px 0;
     }
     input {
-      width: 100%;
-      padding: 5px;
-      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
     }
     button {
-      background-color: #2e8b57;
-      color: white;
       padding: 10px 20px;
-      font-size: 16px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      background-color: var(--button-bg);
+      color: white;
+      font-size: 16px;
+      margin: 10px 5px;
+      transition: background 0.3s, transform 0.2s;
     }
     button:hover {
-      background-color: #256d46;
+      background-color: var(--button-hover);
+      transform: scale(1.05);
     }
-    .social-links {
-      margin-top: 30px;
-      font-size: 18px;
+    #final-result, #status-message {
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 20px;
     }
-    .social-links a {
-      margin: 0 10px;
-      color: #333;
-      text-decoration: none;
-    }
-    .social-links a:hover {
-      color: #0077cc;
-    }
-    .footer {
+    .footer, .social {
+      text-align: center;
       margin-top: 40px;
       font-size: 14px;
-      color: #555;
+    }
+    .toggle-dark {
+      display: block;
+      margin: 10px auto;
+      background: none;
+      color: var(--main-color);
+      border: 2px solid var(--main-color);
+      padding: 8px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .toggle-dark:hover {
+      background-color: var(--main-color);
+      color: white;
     }
   </style>
 </head>
 <body>
-  <h1>حاسبة معدل السنة الأولى CPST - S2</h1>
-
-  <div id="subjects-container"></div>
-
-  <button onclick="calculateGeneralAverage()">احسب المعدل العام</button>
-  <h2 id="final-result"></h2>
-  <p id="status-message" style="font-size: 18px; font-weight: bold;"></p>
-
-  <div class="social-links">
-    <p>تابعني على:</p>
-    <a href="https://facebook.com/zinou.bhr" target="_blank">
-      <i class="fab fa-facebook"></i> فيسبوك
-    </a>
-    |
-    <a href="https://instagram.com/o_u_s_s_a_m._.a" target="_blank">
-      <i class="fab fa-instagram"></i> إنستغرام
-    </a>
+  <header>
+    <h1>حاسبة معدل السنة الأولى CPST - S2</h1>
+  </header>
+  <div class="container">
+    <label>اسم الطالب:</label>
+    <input type="text" id="student-name" placeholder="أدخل اسمك هنا">
+    <div id="subjects-container"></div>
+    <button onclick="calculateGeneralAverage()">احسب المعدل العام</button>
+    <button onclick="downloadPDF()">📥 تحميل كشف النقاط PDF</button>
+    <button class="toggle-dark" onclick="toggleDarkMode()">🌙 تبديل الوضع الليلي</button>
+    <h2 id="final-result"></h2>
+    <p id="status-message"></p>
+    <div class="social">
+      <p>تابعني على:
+        <a href="https://facebook.com/zinou.bhr" target="_blank">فيسبوك</a> |
+        <a href="https://instagram.com/o_u_s_s_a_m._.a" target="_blank">إنستغرام</a>
+      </p>
+    </div>
+    <div class="footer">
+      <p>تم إطلاق الموقع سنة 2025 بواسطة <strong>OUSSAMA SALMA</strong></p>
+    </div>
   </div>
-
-  <div class="footer">
-    <p>هذا الموقع تم إطلاقه سنة 2025 بواسطة <strong>OUSSAMA SALMA</strong></p>
-  </div>
-
   <script>
     const subjects = [
-      { name: 'Analyse 2', coeff: 5, weights: { td: 0.2, tp: 0, cc: 0.2, exam: 0.6 } },
-      { name: 'Algèbre 2', coeff: 4, weights: { td: 0.2, tp: 0, cc: 0.2, exam: 0.6 } },
-      { name: 'Probabilités 2', coeff: 3, weights: { td: 0.2, tp: 0, cc: 0.2, exam: 0.6 } },
+      { name: 'Analyse 2', coeff: 5, weights: { td: 0.2, cc: 0.2, exam: 0.6 } },
+      { name: 'Algèbre 2', coeff: 4, weights: { td: 0.2, cc: 0.2, exam: 0.6 } },
+      { name: 'Probabilités 2', coeff: 3, weights: { td: 0.2, cc: 0.2, exam: 0.6 } },
       { name: 'Physique 2', coeff: 5, weights: { td: 0.1, tp: 0.1, cc: 0.2, exam: 0.6 } },
       { name: 'Chimie 2', coeff: 5, weights: { td: 0.1, tp: 0.1, cc: 0.2, exam: 0.6 } },
-      { name: 'Informatique 2', coeff: 3, weights: { td: 0.2, tp: 0, cc: 0.2, exam: 0.6 } },
-      { name: 'CAO', coeff: 1, weights: { td: 0.4, tp: 0, cc: 0, exam: 0.6 } },
-      { name: 'Français 2', coeff: 1, weights: { td: 0.4, tp: 0, cc: 0, exam: 0.6 } },
-      { name: 'Anglais 2', coeff: 1, weights: { td: 0, tp: 0, cc: 0, exam: 1.0 } },
-      { name: 'Ingénierie humaine 2', coeff: 1, weights: { td: 0, tp: 0, cc: 0, exam: 1.0 } },
-      { name: 'Économie', coeff: 1, weights: { td: 0, tp: 0, cc: 0, exam: 1.0 } }
-    ];
-
-    function createInputs() {
-      const container = document.getElementById('subjects-container');
-      subjects.forEach((subj, index) => {
-        const div = document.createElement('div');
-        div.className = 'subject';
-        div.innerHTML = `<h3>${subj.name} (معامل ${subj.coeff})</h3>`;
-        for (const key in subj.weights) {
-          if (subj.weights[key] > 0) {
-            div.innerHTML += `
-              <label>Note ${key.toUpperCase()}</label>
-              <input type="number" id="${key}_${index}" min="0" max="20">
-            `;
-          }
-        }
-        container.appendChild(div);
-      });
-    }
-
-    function calculateGeneralAverage() {
-      let totalWeighted = 0;
-      let totalCoeff = 0;
-      subjects.forEach((subj, index) => {
-        let sum = 0;
-        for (const key in subj.weights) {
-          if (subj.weights[key] > 0) {
-            const val = parseFloat(document.getElementById(`${key}_${index}`).value || 0);
-            sum += val * subj.weights[key];
-          }
-        }
-        totalWeighted += sum * subj.coeff;
-        totalCoeff += subj.coeff;
-      });
-      const final = (totalWeighted / totalCoeff).toFixed(2);
-      document.getElementById('final-result').innerText = `المعدل العام: ${final}`;
-
-      const status = document.getElementById('status-message');
-      if (final >= 10) {
-        status.innerText = "✅ ناجح – بالتوفيق في مسيرتك!";
-        status.style.color = "green";
-      } else {
-        status.innerText = "❌ راسب – لا تحزن، القادم أفضل بإذن الله ❤️";
-        status.style.color = "red";
+      { name: 'Informatique 2', coeff: 3, weights: { td: 0.2, cc: 0.2, exam: 0.6 } },
+      { name: 'CAO', coeff: 1, weights: { td: 0.4, exam: 0.6 } },
+      { name: 'Français 2', coeff: 1, weights: { td: 0.4, exam: 0.6 } },
+      { name: 'Anglais 2', coeff: 1, weights: { exam: 1.0 } },
+      { name: 'Ingénierie humaine 2', coeff: 1, weights: { exam: 1.0 } },
+      { name: 'Économie', coeff: 1, weights: { exam: 1.0 } }
+    ];function createInputs() {
+  const container = document.getElementById("subjects-container");
+  subjects.forEach((subject, index) => {
+    const div = document.createElement("div");
+    div.className = "subject";
+    div.innerHTML = `<h3>${subject.name} (معامل ${subject.coeff})</h3>`;
+    for (const key in subject.weights) {
+      if (subject.weights[key] > 0) {
+        div.innerHTML += `<label>${key.toUpperCase()}</label><input type="number" id="${key}_${index}" min="0" max="20">`;
       }
     }
+    container.appendChild(div);
+  });
+}
 
-    createInputs();
+function calculateGeneralAverage() {
+  let totalWeighted = 0;
+  let totalCoeff = 0;
+  let valid = true;
+
+  subjects.forEach((subject, index) => {
+    let subjectSum = 0;
+    for (const key in subject.weights) {
+      if (subject.weights[key] > 0) {
+        const input = document.getElementById(`${key}_${index}`);
+        const val = parseFloat(input.value);
+        if (isNaN(val) || val < 0 || val > 20) {
+          alert("يرجى ملء جميع الخانات بقيم صحيحة بين 0 و 20");
+          input.focus();
+          valid = false;
+          return;
+        }
+        subjectSum += val * subject.weights[key];
+      }
+    }
+    totalWeighted += subjectSum * subject.coeff;
+    totalCoeff += subject.coeff;
+  });
+
+  if (!valid) return;
+  const final = (totalWeighted / totalCoeff).toFixed(2);
+  document.getElementById("final-result").innerText = `المعدل العام: ${final}`;
+  document.getElementById("status-message").innerText = final >= 10 ? "✅ ناجح – بالتوفيق!" : "❌ راسب – القادم أفضل!";
+}
+
+async function downloadPDF() {
+  const name = document.getElementById("student-name").value.trim();
+  if (!name) return alert("يرجى إدخال اسم الطالب");
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  let y = 20;
+
+  doc.setFont("Arial", "bold");
+  doc.text(`كشف النقاط - ${name}`, 105, y, { align: "center" });
+  y += 10;
+
+  let totalWeighted = 0;
+  let totalCoeff = 0;
+
+  subjects.forEach((subject, index) => {
+    let subjectSum = 0;
+    let line = `${subject.name}: `;
+    for (const key in subject.weights) {
+      if (subject.weights[key] > 0) {
+        const val = parseFloat(document.getElementById(`${key}_${index}`).value);
+        line += `${key.toUpperCase()}: ${val}  `;
+        subjectSum += val * subject.weights[key];
+      }
+    }
+    const avg = (subjectSum).toFixed(2);
+    line += ` => معدل: ${avg}`;
+    doc.text(line, 20, y);
+    y += 10;
+    totalWeighted += subjectSum * subject.coeff;
+    totalCoeff += subject.coeff;
+  });
+
+  const final = (totalWeighted / totalCoeff).toFixed(2);
+  y += 10;
+  doc.text(`المعدل العام: ${final}`, 20, y);
+  y += 10;
+  doc.text(final >= 10 ? "✅ ناجح – بالتوفيق!" : "❌ راسب – القادم أفضل!", 20, y);
+  y += 10;
+  doc.text(`التاريخ: ${new Date().toLocaleDateString()}`, 20, y);
+  y += 10;
+  doc.text("تم إنشاؤه بواسطة CPST معدل+ | OUSSAMA SALMA", 20, y);
+  doc.save(`${name}_كشف_النقاط.pdf`);
+}
+
+function toggleDarkMode() {
+  document.body.classList.toggle("dark-mode");
+}
+
+createInputs();
+
   </script>
 </body>
 </html>
